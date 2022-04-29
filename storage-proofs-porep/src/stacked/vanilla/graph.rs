@@ -227,6 +227,7 @@ where
         base_data: &[u8],
         mut hasher: Sha256,
     ) -> [u8; 32] {
+        //将basetree数据加载到cpu缓存中
         prefetch(&cache_parents[..BASE_DEGREE], base_data);
 
         // fill buffer
