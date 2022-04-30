@@ -52,13 +52,13 @@ use crate::{
 #[allow(clippy::too_many_arguments)]
 pub fn seal_pre_commit_phase1<R, S, T, Tree: 'static + MerkleTreeTrait>(
     porep_config: PoRepConfig,
-    cache_path: R,
-    in_path: S,
-    out_path: T,
-    prover_id: ProverId,
-    sector_id: SectorId,
-    ticket: Ticket,
-    piece_infos: &[PieceInfo],
+    cache_path: R, //cache dir == cached dir
+    in_path: S, //in dir == unsealed dir
+    out_path: T, //out dir == sealed dir
+    prover_id: ProverId, //minerId
+    sector_id: SectorId, //sectorId
+    ticket: Ticket, //random number
+    piece_infos: &[PieceInfo], //metadata of pieces
 ) -> Result<SealPreCommitPhase1Output<Tree>>
 where
     R: AsRef<Path>,
@@ -81,7 +81,7 @@ where
         "cache_path must be a directory"
     );
 
-    let sector_bytes = usize::from(PaddedBytesAmount::from(porep_config));
+    let sector_bytes = usize::from(PaddedBytesAmount::from(porep_config)); //获取封装扇区大小
     fs::metadata(&in_path)
         .with_context(|| format!("could not read in_path={:?})", in_path.as_ref().display()))?;
 
@@ -112,6 +112,7 @@ where
             .with_context(|| format!("could not mmap out_path={:?}", out_path.as_ref().display()))?
     };
 
+    //todo: partitions ??
     let compound_setup_params = compound_proof::SetupParams {
         vanilla_params: setup_params(
             PaddedBytesAmount::from(porep_config),

@@ -29,7 +29,7 @@ pub fn commitment_from_fr(fr: Fr) -> Commitment {
 
 pub fn get_base_tree_size<Tree: MerkleTreeTrait>(sector_size: SectorSize) -> Result<usize> {
     let base_tree_leaves = u64::from(sector_size) as usize
-        / size_of::<<Tree::Hasher as Hasher>::Domain>()
+        / size_of::<<Tree::Hasher as Hasher>::Domain>() //32B
         / get_base_tree_count::<Tree>();
 
     get_merkle_tree_len(base_tree_leaves, Tree::Arity::to_usize())

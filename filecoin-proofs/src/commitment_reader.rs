@@ -47,6 +47,7 @@ impl<R: Read> CommitmentReader<R> {
 
         let mut current_row = current_tree;
 
+        //计算merkle根hash
         while current_row.len() > 1 {
             let next_row = current_row
                 .par_chunks(2)

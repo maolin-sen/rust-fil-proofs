@@ -371,6 +371,7 @@ pub fn generate_piece_commitment<T: Read>(
 /// * `target` - a writer where we will write the processed piece bytes.
 /// * `piece_size` - the number of unpadded user-bytes which can be read from source before EOF.
 /// * `piece_lengths` - the number of bytes for each previous piece in the sector.
+/// 将piece添加到sector中，并计算piece的commonD。
 pub fn add_piece<R, W>(
     source: R,
     target: W,
@@ -389,7 +390,9 @@ where
         let source = BufReader::new(source);
         let mut target = BufWriter::new(target);
 
+        //返回sector之前存储piecesde的大小（padding之后）
         let written_bytes = sum_piece_bytes_with_alignment(piece_lengths);
+        //获取新添加piece的padding信息
         let piece_alignment = get_piece_alignment(written_bytes, piece_size);
         let fr32_reader = Fr32Reader::new(source);
 
@@ -413,6 +416,7 @@ where
             target.write_all(&[0u8][..])?;
         }
 
+        //merkle hash == commonD
         let commitment = commitment_reader.finish()?;
         let mut comm = [0u8; 32];
         comm.copy_from_slice(commitment.as_ref());
